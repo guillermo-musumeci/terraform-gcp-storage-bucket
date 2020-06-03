@@ -1,5 +1,5 @@
 # GCP Settings
-gcp_project = "artful-wind-277808"
+gcp_project = "garden-green-456813"
 gcp_region  = "europe-west4"
 
 # Bucket
