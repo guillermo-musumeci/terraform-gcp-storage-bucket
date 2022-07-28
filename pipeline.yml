@@ -1,0 +1,48 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(agent.builddirectory)'
+    Contents: '**'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+  displayName: 'Terraform Copy'
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: '0.12.3'
+  displayName: 'install terraform'
+- task: TerraformTaskV1@0
+  displayName: 'Terraform Init'
+  inputs:
+    provider: 'gcp'
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)'
+    backendServiceGCP: 'gcp'
+    backendGCPBucketName: 'bucket-test-rv'
+    backendGCPPrefix: 'dev'
+
+- task: TerraformTaskV1@0
+  displayName: 'Terraform Plan'
+  inputs:
+    provider: 'gcp'
+    command: 'plan'
+    environmentServiceNameGCP: 'gcp'
+
+- task: TerraformTaskV1@0
+  displayName: 'Terraform Apply'
+  inputs:
+    provider: 'gcp'
+    command: 'apply'
+    environmentServiceNameGCP: 'gcp'
